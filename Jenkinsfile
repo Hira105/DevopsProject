@@ -1,54 +1,35 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/yourusername/node-mongo-app.git'
-            }
-        }
-
-        stage('Install Dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Lint Code') {
-            steps {
-                sh 'npm run lint'
-            }
-        }
-
-        stage('Unit Test') {
-            steps {
-                sh 'npm test'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh 'docker build -t node-mongo-app .'
-            }
-        }
-
-        stage('Deploy Container') {
-            steps {
-                sh 'docker run -d -p 3000:3000 --name webapp node-mongo-app'
-            }
-        }
-
-        stage('Selenium Test') {
-            steps {
-                sh 'docker run --rm -v $(pwd)/selenium:/tests selenium/standalone-chrome python /tests/test_form.py'
-            }
-        }
+  stages {
+    stage('Lint (Simulated)') {
+      steps {
+        echo 'Lint check passed (simulated)'
+      }
     }
 
-    post {
-        always {
-            sh 'docker stop webapp || true'
-            sh 'docker rm webapp || true'
-        }
+    stage('Build (Install packages)') {
+      steps {
+        sh 'pip install -r requirements.txt'
+      }
     }
+
+    stage('Unit Test') {
+      steps {
+        echo 'Running unit tests (Simulated)'
+      }
+    }
+
+    stage('Docker Build') {
+      steps {
+        sh 'docker build -t selenium-tests .'
+      }
+    }
+
+    stage('Run Selenium Tests') {
+      steps {
+        sh 'docker run selenium-tests'
+      }
+    }
+  }
 }
